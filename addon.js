@@ -43,7 +43,7 @@ app.get('/manifest.json', (req, res) => {
                 name: 'PPV.to',
                 extra: [{
                     name: 'genre',
-                    options: streams.map(x => x.category)
+                    options: streams?.map(x => x.category) ?? []
                 }]
             }]
         });
@@ -58,12 +58,12 @@ app.get('/catalog/:type/:id/:extra?.json', async (req, res) => {
     try {
         if (!req.params.id?.startsWith(prefix)) throw new Error(`Unknown ID in Catalog handler: "${req.params.id}"`);
         return res.json({
-            metas: streams.flatMap(x => x.streams.map(y => ({
+            metas: streams?.flatMap(x => x.streams.map(y => ({
                 id: y.id,
                 type: req.params.type,
                 name: y.name,
                 poster: y.poster
-            })))
+            }))) ?? []
         });
     } catch (error) {
         if (process.env.DEV_LOGGING) console.error('Error in Catalog handler: ' + error);
@@ -76,7 +76,7 @@ app.get('/meta/:type/:id.json', async (req, res) => {
     try {
         if (!req.params.id?.startsWith(prefix)) throw new Error(`Unknown ID in Meta handler: "${req.params.id}"`);
         const trimmedID = req.params.id.slice(prefix.length);
-        const stream = streams.flatMap(x => x.streams).find(x => x.id === trimmedID);
+        const stream = streams?.flatMap(x => x.streams).find(x => x.id === trimmedID);
         if (!stream) throw new Error(`Unknown ID in Meta handler: "${req.params.id}"`);
         return res.json({
             meta: {
