@@ -31,7 +31,7 @@ setInterval(async () => {
     } catch (error) {
         if (process.env.DEV_LOGGING) console.error('Error in Stream fetching: ' + error);
     }
-}, 3600);
+}, 3600000);
 
 // Stremio Addon Manifest Route
 app.get('/manifest.json', (req, res) => {
