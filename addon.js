@@ -6,8 +6,8 @@ const express = require('express');
 
 /** @type {number} */
 const PORT = process.env.PORT ?? 7000;
-const prefix = 'ppv_to:';
-const defaultType = 'PPV.to';
+const prefix = 'ppv:';
+const defaultType = 'PPV';
 
 const app = express();
 app.set('trust proxy', true);
@@ -39,17 +39,17 @@ let streams;
 app.get('/manifest.json', (req, res) => {
     try {
         return res.json({
-            id: 'ppvtio.vercel.com',
+            id: 'ppvio.vercel.com',
             version: VERSION,
-            name: 'PPVtio | Vercel',
-            description: 'Play PPV.to live-streams.',
+            name: 'PPVio | Vercel',
+            description: 'Play PPV live-streams.',
             resources: ['catalog', 'meta'],
             types: [defaultType],
             idPrefixes: [prefix],
             catalogs: [{
                 type: defaultType,
-                id: prefix + 'PPV.to',
-                name: 'PPV.to',
+                id: prefix + 'PPV',
+                name: 'PPV',
                 extra: [{
                     name: 'genre',
                     options: streams?.map(x => x.category) ?? []
