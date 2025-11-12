@@ -1,7 +1,7 @@
 {
-  "name": "PPVtio",
+  "name": "PPVio",
   "version": "0.1.0",
-  "description": "A Stremio addon that scrapes live sport streams from PPV.to.",
+  "description": "A Stremio addon that scrapes PPV live sport streams.",
   "main": "addon.js",
   "scripts": {
     "start": "node --env-file-if-exists=.env addon.js",
