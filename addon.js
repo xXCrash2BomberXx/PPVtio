@@ -25,13 +25,15 @@ app.use((req, res, next) => {
 });
 
 let streams;
-setInterval(async () => {
+(async function update() {
     try {
         streams = (await (await fetch('https://ppv.to/api/streams')).json()).streams;
     } catch (error) {
         if (process.env.DEV_LOGGING) console.error('Error in Stream fetching: ' + error);
+    } finally {
+        setTimeout(update, 3600000);
     }
-}, 3600000);
+})();
 
 // Stremio Addon Manifest Route
 app.get('/manifest.json', (req, res) => {
