@@ -27,7 +27,9 @@ app.use((req, res, next) => {
 let streams;
 let lastFetchTime = 0;
 async function getData() {
-    if (streams && (Date.now() - lastFetchTime) < 3600000) return;
+    const now = Date.now();
+    if (streams && (now - lastFetchTime) < 3600000) return;
+    lastFetchTime = now;
     try {
         streams = (await (await fetch('https://ppv.to/api/streams')).json()).streams;
     } catch (error) {
