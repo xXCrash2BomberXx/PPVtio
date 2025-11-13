@@ -25,19 +25,20 @@ app.use((req, res, next) => {
 });
 
 let streams;
-(async function update() {
+let lastFetchTime = 0;
+async function getData() {
+    if (streams && (Date.now() - lastFetchTime) < 3600000) return;
     try {
         streams = (await (await fetch('https://ppv.to/api/streams')).json()).streams;
     } catch (error) {
         if (process.env.DEV_LOGGING) console.error('Error in Stream fetching: ' + error);
-    } finally {
-        setTimeout(update, 3600000);
     }
-})();
+};
 
 // Stremio Addon Manifest Route
-app.get('/manifest.json', (req, res) => {
+app.get('/manifest.json', async (req, res) => {
     try {
+        await getData();
         return res.json({
             id: 'ppvio.vercel.com',
             version: VERSION,
@@ -71,6 +72,7 @@ app.get('/catalog/:type/:id/:extra?.json', async (req, res) => {
     try {
         if (!req.params.id?.startsWith(prefix)) throw new Error(`Unknown ID in Catalog handler: "${req.params.id}"`);
         const genre = Object.fromEntries(new URLSearchParams(req.params.extra ?? '')).genre;
+        await getData();
         return res.json({
             metas: streams?.flatMap(x => ([undefined, x.category].includes(genre) ? x.streams : []).map(y => ({
                 id: prefix + y.id,
@@ -90,6 +92,7 @@ app.get('/catalog/:type/:id/:extra?.json', async (req, res) => {
 app.get('/meta/:type/:id.json', async (req, res) => {
     try {
         if (!req.params.id?.startsWith(prefix)) throw new Error(`Unknown ID in Meta handler: "${req.params.id}"`);
+        await getData();
         const stream = streams?.flatMap(x => x.streams).find(x => `${prefix}${x.id}` === req.params.id);
         if (!stream) throw new Error(`Unknown ID in Meta handler: "${req.params.id}"`);
         return res.json({
